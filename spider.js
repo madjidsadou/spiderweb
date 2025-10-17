@@ -1,9 +1,9 @@
 var map = new L.Map('map', {
-    center:[45.91315643050401,7.080688308924438],
+    center:[46.53584966676345,6.626950549641442],
     // maxBounds: [[44.8, 8.2], [47.5, 9]],
     minZoom: 0,
     maxZoom: 20,
-    zoom: 12
+    zoom: 16
 });
 
 // Define tile layers
@@ -92,7 +92,11 @@ var baseLayers = {
     const nearest5 = stopsWithDistance
       .sort((a, b) => a.distance - b.distance)
       .slice(0, 5);
-      console.log(nearest5)
+      const avgdist = (nearest5[0].distance + nearest5[1].distance + nearest5[2].distance + nearest5[3].distance +nearest5[4].distance)/5
+      document.getElementById("avg").innerHTML =
+      `<strong>Average distance to the 5 closest facilities:</strong> ${avgdist.toFixed(1)} m`;
+
+
 
     nearestMarkers.clearLayers();
     nearestLines.clearLayers();
