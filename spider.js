@@ -44,6 +44,18 @@ var baseLayers = {
     // L.geoJSON(busstop).addTo(map);
 
 
+// function updateCenterLatLng() {
+//   // Compute center of the map container in pixels
+//   const mapSize = map.getSize(); // {x: width, y: height}
+//   const centerPixel = L.point(mapSize.x / 2, mapSize.y / 2);
+
+//   // Convert pixel center to geographic LatLng
+//   const centerLatLng = map.containerPointToLatLng(centerPixel);
+
+//   console.log('mapcenter', centerLatLng); // prints LatLng of screen center
+//   return centerLatLng;
+// }
+
   // --- Helper function to convert GeoJSON coords to Leaflet LatLng ---
   function coordsToLatLng(coords) {
     if (Array.isArray(coords[0][0])) {
@@ -67,11 +79,20 @@ var baseLayers = {
 
   function updateNearestStations() {
     const center = map.getCenter();
+    console.log('center', center)
+    const mapSize = map.getSize(); // {x: width, y: height}
+    const centerPixel = L.point(mapSize.x / 2, mapSize.y / 2);
+    console.log('center pixel',centerPixel)
+
+  // Convert pixel center to geographic LatLng
+      const centerLatLng = map.containerPointToLatLng(centerPixel);
+
+
 
     // Compute distances
     const stopsWithDistance = busstop.features.map(feature => {
       const latLng = coordsToLatLng(feature.geometry.coordinates);
-      const distance = map.distance(center, latLng);
+      const distance = map.distance(centerLatLng, latLng);
       return { feature, latLng, distance };
     });
 
@@ -107,4 +128,3 @@ var baseLayers = {
 
 map.on('move', updateCenterMarker);
 map.on('zoom', updateCenterMarker);
-
