@@ -56,7 +56,6 @@ var baseLayers = {
 //   return centerLatLng;
 // }
 
-  // --- Helper function to convert GeoJSON coords to Leaflet LatLng ---
   function coordsToLatLng(coords) {
     if (Array.isArray(coords[0][0])) {
       coords = coords[0][0];
@@ -64,15 +63,13 @@ var baseLayers = {
     return L.latLng(coords[1], coords[0]);
   }
 
-  // --- Layer groups for markers and lines ---
   const nearestMarkers = L.layerGroup().addTo(map);
   const nearestLines = L.layerGroup().addTo(map);
 
-  // --- Function to update nearest 5 stations ---
   const centerMarker = L.marker(map.getCenter(), {
   icon: L.icon({
     iconUrl: 'marker.png',
-    iconSize: [25, 41],    // size of the icon in pixels
+    iconSize: [25, 41],    
   }),
   interactive: false
 }).addTo(map);
@@ -84,30 +81,32 @@ var baseLayers = {
     const centerPixel = L.point(mapSize.x / 2, mapSize.y / 2);
     console.log('center pixel',centerPixel)
 
-  // Convert pixel center to geographic LatLng
       const centerLatLng = map.containerPointToLatLng(centerPixel);
 
-
-
-    // Compute distances
     const stopsWithDistance = busstop.features.map(feature => {
       const latLng = coordsToLatLng(feature.geometry.coordinates);
       const distance = map.distance(centerLatLng, latLng);
       return { feature, latLng, distance };
     });
 
-    // Sort and pick 5 nearest
     const nearest5 = stopsWithDistance
       .sort((a, b) => a.distance - b.distance)
       .slice(0, 5);
+      console.log(nearest5)
 
-    // Clear previous markers and lines
     nearestMarkers.clearLayers();
     nearestLines.clearLayers();
 
+    const busicon = L.icon({
+  iconUrl: 'bus.png', 
+  iconSize: [32, 32], 
+  iconAnchor: [16, 32], 
+  popupAnchor: [0, -32] 
+});
+
     // Draw markers and lines
     nearest5.forEach(stop => {
-      L.marker(stop.latLng)
+      L.marker(stop.latLng,{icon : busicon})
         .addTo(nearestMarkers)
         .bindPopup(stop.feature.properties.name || 'Bus Stop');
 
@@ -116,10 +115,8 @@ var baseLayers = {
     });
   }
 
-  // --- Call once initially ---
   updateNearestStations();
 
-  // --- Update continuously while panning ---
   map.on('move', updateNearestStations);
 
   function updateCenterMarker() {
